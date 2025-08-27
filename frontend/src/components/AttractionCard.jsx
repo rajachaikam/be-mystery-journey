@@ -1,25 +1,29 @@
 import React from "react";
-import placeholder from "../assets/placeholder.jpg";
-import statue from "../assets/nyc_statue.jpg";
-import centralPark from "../assets/nyc_central_park.jpg";
-import empireState from "../assets/nyc_empire_state.jpg";
-
-const imagesMap = {
-  "Statue of Liberty": statue,
-  "Central Park": centralPark,
-  "Empire State Building": empireState,
-};
+import "./AttractionCard.css"; // optional, extra styles if needed
 
 function AttractionCard({ attraction }) {
-  const imgSrc = imagesMap[attraction.name] || placeholder;
-
   return (
     <div className="card">
-      <img src={imgSrc} alt={attraction.name} />
+      {/* Dynamic image: use attraction id */}
+      <img
+        src={`/assets/${attraction.id}.jpg`}
+        alt={attraction.name}
+        onError={(e) => {
+          // fallback image if not found
+          e.target.onerror = null;
+          e.target.src = "/assets/default.jpg";
+        }}
+      />
+
       <div className="card-content">
         <h3>{attraction.name}</h3>
         <p>{attraction.description}</p>
-        <p className="tags">Tags: {attraction.tags.join(", ")}</p>
+
+        <div className="tags">
+          {attraction.tags.map((tag) => (
+            <span key={tag}>{tag}</span>
+          ))}
+        </div>
       </div>
     </div>
   );

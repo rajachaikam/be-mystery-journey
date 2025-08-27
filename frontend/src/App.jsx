@@ -9,8 +9,9 @@ function App() {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [attractions, setAttractions] = useState([]);
+  const BASE_URL = "https://be-mystery-backend.onrender.com";
 
-const BASE_URL = "https://be-mystery-backend.onrender.com";
+
   useEffect(() => {
     fetch(`${BASE_URL}/states`)
   .then(res => res.json())
