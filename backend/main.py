@@ -8,7 +8,7 @@ app = FastAPI()
 # Allow CORS from frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # frontend URL
+    allow_origins=["https://be-mystery-journey.vercel.app"],  # frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

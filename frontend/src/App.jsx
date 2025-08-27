@@ -10,21 +10,23 @@ function App() {
   const [selectedCity, setSelectedCity] = useState("");
   const [attractions, setAttractions] = useState([]);
 
+const BASE_URL = "https://be-mystery-backend.onrender.com";
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/states")
-      .then(res => res.json())
-      .then(setStates);
+    fetch(`${BASE_URL}/states`)
+  .then(res => res.json())
+  .then(data => setStates(data));
+
   }, []);
 
   const loadCities = (stateId) => {
     setSelectedState(stateId);
-    fetch(`http://127.0.0.1:8000/cities/${stateId}`)
+    fetch(`${BASE_URL}/cities/${stateId}`)
       .then(res => res.json())
       .then(setCities);
   };
 
   const loadAttractions = () => {
-    fetch(`http://127.0.0.1:8000/attractions/${selectedCity}`)
+    fetch(`${BASE_URL}/attractions/${selectedCity}`)
       .then(res => res.json())
       .then(setAttractions);
   };
