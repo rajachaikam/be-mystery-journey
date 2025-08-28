@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import Attractions from "./components/Attractions";
-import { API_BASE_URL } from "./api/apiConfig";
+import { API_BASE_URL } from "./api/apiconfig";
 import "./App.css";
 
 const App = () => {
