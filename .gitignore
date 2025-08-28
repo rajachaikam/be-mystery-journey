@@ -11,3 +11,5 @@ dist/
 # IDE / OS
 .vscode/
 .DS_Store
+
+frontend/src/assets/hero-video.mp4

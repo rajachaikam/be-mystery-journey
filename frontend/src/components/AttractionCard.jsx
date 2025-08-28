@@ -1,28 +1,23 @@
 import React from "react";
-import "./AttractionCard.css"; // optional if you want extra styling
+import "./AttractionCard.css";
 
-function AttractionCard({ attraction }) {
+export default function AttractionCard({ attraction }) {
+  const imgPath = `/assets/images/${attraction.id}.jpg`; // Make sure images are named by ID
   return (
-    <div className="card">
-      <img
-        src={`/assets/${attraction.id}.jpg`}
-        alt={attraction.name}
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src = "/assets/default.jpg";
-        }}
-      />
-      <div className="card-content">
+    <div className="attraction-card">
+      <img src={imgPath} alt={attraction.name} />
+      <div className="card-body">
         <h3>{attraction.name}</h3>
-        <p>{attraction.description}</p>
-        <div className="tags">
-          {attraction.tags.map((tag) => (
-            <span key={tag}>{tag}</span>
-          ))}
-        </div>
+        <p>Duration: {attraction.duration_hours} hours</p>
+        <p>
+          Price: {attraction.price_min} - {attraction.price_max} USD
+        </p>
+        {attraction.ticket_url && (
+          <a href={attraction.ticket_url} target="_blank">
+            Book Now
+          </a>
+        )}
       </div>
     </div>
   );
 }
-
-export default AttractionCard;

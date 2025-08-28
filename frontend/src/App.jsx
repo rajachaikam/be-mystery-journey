@@ -1,58 +1,92 @@
-import React, { useState, useEffect } from "react";
-import Dropdown from "./components/Dropdown.jsx";
-import AttractionCard from "./components/AttractionCard.jsx";
+import React, { useEffect, useState, useRef } from "react";
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import Footer from "./components/Footer";
+import Attractions from "./components/Attractions";
+import { API_BASE_URL } from "./api/apiConfig";
 import "./App.css";
 
-function App() {
+const App = () => {
   const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
   const [selectedState, setSelectedState] = useState("");
+  const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
   const [attractions, setAttractions] = useState([]);
-  const BASE_URL = "https://be-mystery-backend.onrender.com";
+  const attractionsRef = useRef(null);
 
-
+  // Fetch states
   useEffect(() => {
-    fetch(`${BASE_URL}/states`)
-  .then(res => res.json())
-  .then(data => setStates(data));
-
+    const fetchStates = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/states`);
+        const data = await res.json();
+        setStates(data);
+      } catch (err) {
+        console.error("Error fetching states:", err);
+      }
+    };
+    fetchStates();
   }, []);
 
-  const loadCities = (stateId) => {
-    setSelectedState(stateId);
-    fetch(`${BASE_URL}/cities/${stateId}`)
-      .then(res => res.json())
-      .then(setCities);
-  };
+  // Fetch cities
+  useEffect(() => {
+    if (!selectedState) return setCities([]);
+    const fetchCities = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/cities/${selectedState}`);
+        const data = await res.json();
+        setCities(data);
+      } catch (err) {
+        console.error("Error fetching cities:", err);
+      }
+    };
+    fetchCities();
+  }, [selectedState]);
 
-  const loadAttractions = () => {
-    fetch(`${BASE_URL}/attractions/${selectedCity}`)
-      .then(res => res.json())
-      .then(setAttractions);
+  // Fetch attractions
+  useEffect(() => {
+    if (!selectedCity) return setAttractions([]);
+    const fetchAttractions = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/attractions/${selectedCity}`);
+        const data = await res.json();
+        setAttractions(data);
+      } catch (err) {
+        console.error("Error fetching attractions:", err);
+      }
+    };
+    fetchAttractions();
+  }, [selectedCity]);
+
+  // Scroll handler
+  const handleExploreClick = () => {
+    setTimeout(() => {
+      attractionsRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 500); // wait until dropdowns show
   };
 
   return (
-    <div className="app-container">
-      <h1>Be Mystery Journey</h1>
+    <div className="App">
+      <Navbar />
 
-      <div className="controls">
-        <Dropdown label="State" options={states} onChange={loadCities} />
-        {selectedState && (
-          <Dropdown label="City" options={cities} onChange={setSelectedCity} />
-        )}
-        <button onClick={loadAttractions} disabled={!selectedCity}>
-          Load Attractions
-        </button>
+      <Hero
+        states={states}
+        cities={cities}
+        selectedState={selectedState}
+        setSelectedState={setSelectedState}
+        selectedCity={selectedCity}
+        setSelectedCity={setSelectedCity}
+        onExploreClick={handleExploreClick}
+      />
+
+      {/* Attractions Section */}
+      <div ref={attractionsRef}>
+        <Attractions attractions={attractions} />
       </div>
 
-      <div className="cards">
-        {attractions.map(a => (
-          <AttractionCard key={a.id} attraction={a} />
-        ))}
-      </div>
+      <Footer />
     </div>
   );
-}
+};
 
 export default App;
