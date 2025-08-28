@@ -1,24 +1,28 @@
+# backend/main.py
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import os
 from supabase import create_client, Client
-from dotenv import load_dotenv
+from fastapi.responses import JSONResponse
 
-load_dotenv()
+# Supabase credentials from environment variables
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise Exception("Supabase credentials are missing. Set SUPABASE_URL and SUPABASE_KEY in Render environment.")
+
+# Create Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# Initialize FastAPI
 app = FastAPI()
 
+# CORS settings: allow your frontend domain
 origins = [
-    "http://localhost:5173",  # Local Vite
-    "http://127.0.0.1:5173",
-    "https://be-mystery-journey.vercel.app",  # Vercel frontend
-    "https://bemysteryjourney.com"  # Replace with your custom domain
+    "https://www.bemysteryjourney.com",  # your production frontend
+    "http://localhost:5173"               # local dev
 ]
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,33 +32,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Example route: fetch states
 @app.get("/states")
 async def get_states():
     try:
-        res = supabase.table("states").select("*").execute()
-        # Check if data exists
-        if res.data is None:
-            return {"error": "No states found"}
-        return res.data
+        response = supabase.table("states").select("*").execute()
+        return JSONResponse(content=response.data)
     except Exception as e:
-        return {"error": str(e)}
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
+# Example route: fetch cities for a state
 @app.get("/cities/{state_id}")
 async def get_cities(state_id: str):
     try:
-        res = supabase.table("cities").select("*").eq("state_id", state_id).execute()
-        if res.data is None:
-            return {"error": "No cities found"}
-        return res.data
+        response = supabase.table("cities").select("*").eq("state_id", state_id).execute()
+        return JSONResponse(content=response.data)
     except Exception as e:
-        return {"error": str(e)}
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
+# Example route: fetch attractions for a city
 @app.get("/attractions/{city_id}")
 async def get_attractions(city_id: str):
     try:
-        res = supabase.table("attractions").select("*").eq("city_id", city_id).execute()
-        if res.data is None:
-            return {"error": "No attractions found"}
-        return res.data
+        response = supabase.table("attractions").select("*").eq("city_id", city_id).execute()
+        return JSONResponse(content=response.data)
     except Exception as e:
-        return {"error": str(e)}
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
+# Root endpoint
+@app.get("/")
+async def root():
+    return {"message": "Backend is running."}
