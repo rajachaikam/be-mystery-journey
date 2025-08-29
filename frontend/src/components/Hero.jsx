@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import "./Hero.css";
 
 export default function Hero({ states, cities, selectedState, setSelectedState, selectedCity, setSelectedCity, onExploreClick }) {
@@ -6,12 +6,11 @@ export default function Hero({ states, cities, selectedState, setSelectedState, 
 
   const handleExploreClick = () => {
     setShowDropdowns(true);
-    if (onExploreClick) onExploreClick(); // tell parent to scroll
   };
 
   return (
     <section className="hero">
-      {/* Background Video */}
+      {/* Background Video (fixed) */}
       <video
         className="hero-video"
         autoPlay
@@ -24,42 +23,33 @@ export default function Hero({ states, cities, selectedState, setSelectedState, 
         Your browser does not support the video tag.
       </video>
 
-      {/* Hero Content */}
+      {/* Overlay content */}
       <div className="hero-content">
+        <div className="hero-header">
+          <h1>Discover Hidden Wonders</h1>
+          <p>Explore amazing places and plan your next adventure</p>
+        </div>
+
         {!showDropdowns ? (
-          <>
-            <h1>Discover Hidden Wonders</h1>
-            <p>Explore amazing places and plan your next adventure</p>
-            <button className="cta-button" onClick={handleExploreClick}>
-              Start Exploring
-            </button>
-          </>
+          <button className="cta-button" onClick={handleExploreClick}>
+            Start Exploring
+          </button>
         ) : (
           <div className="dropdowns">
             {/* State Dropdown */}
-            <select
-              value={selectedState}
-              onChange={(e) => setSelectedState(e.target.value)}
-            >
+            <select value={selectedState} onChange={(e) => setSelectedState(e.target.value)}>
               <option value="">Select State</option>
               {states.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
+                <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
 
             {/* City Dropdown */}
             {selectedState && (
-              <select
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-              >
+              <select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}>
                 <option value="">Select City</option>
                 {cities.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             )}

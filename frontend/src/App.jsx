@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import Attractions from "./components/Attractions";
+import LogoHeader from "./components/LogoHeader";
 import { API_BASE_URL } from "./api/apiconfig";
 import "./App.css";
 
@@ -12,6 +12,7 @@ const App = () => {
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
   const [attractions, setAttractions] = useState([]);
+
   const attractionsRef = useRef(null);
 
   // Fetch states
@@ -28,7 +29,7 @@ const App = () => {
     fetchStates();
   }, []);
 
-  // Fetch cities
+  // Fetch cities when state changes
   useEffect(() => {
     if (!selectedState) return setCities([]);
     const fetchCities = async () => {
@@ -41,9 +42,12 @@ const App = () => {
       }
     };
     fetchCities();
+
+    setSelectedCity("");
+    setAttractions([]);
   }, [selectedState]);
 
-  // Fetch attractions
+  // Fetch attractions and scroll when city changes
   useEffect(() => {
     if (!selectedCity) return setAttractions([]);
     const fetchAttractions = async () => {
@@ -51,6 +55,11 @@ const App = () => {
         const res = await fetch(`${API_BASE_URL}/attractions/${selectedCity}`);
         const data = await res.json();
         setAttractions(data);
+
+        // Scroll after attractions render
+        setTimeout(() => {
+          attractionsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
       } catch (err) {
         console.error("Error fetching attractions:", err);
       }
@@ -58,17 +67,15 @@ const App = () => {
     fetchAttractions();
   }, [selectedCity]);
 
-  // Scroll handler
   const handleExploreClick = () => {
-    setTimeout(() => {
-      attractionsRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 500); // wait until dropdowns show
+    // Only reveals dropdowns in Hero, no scrolling
   };
 
   return (
     <div className="App">
-      <Navbar />
+      <LogoHeader />
 
+      {/* Hero Section */}
       <Hero
         states={states}
         cities={cities}
@@ -80,9 +87,11 @@ const App = () => {
       />
 
       {/* Attractions Section */}
-      <div ref={attractionsRef}>
-        <Attractions attractions={attractions} />
-      </div>
+      {attractions.length > 0 && (
+        <div ref={attractionsRef}>
+          <Attractions attractions={attractions} />
+        </div>
+      )}
 
       <Footer />
     </div>
